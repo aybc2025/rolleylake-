@@ -1,4 +1,3 @@
-
 :root{
   --bg:#f5f9ff;
   --primary:#1e88e5;
@@ -6,30 +5,45 @@
   --text:#0c2540;
   --card:#ffffff;
 }
+
+/* בסיס */
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji','Segoe UI Emoji'}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans','Helvetica Neue',Arial,'Apple Color Emoji','Segoe UI Emoji'}
+/* כותרת דביקה + safe areas */
 header{
   position:sticky;top:0;z-index:1000;
   background:linear-gradient(90deg,var(--primary),var(--accent));
-  color:#fff;padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.15)
+  color:#fff;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 10px 12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.15)
 }
 header .title{display:flex;align-items:center;gap:10px}
 header .title img{width:28px;height:28px}
+
+/* ניווט – גלילה אופקית חלקה במובייל */
 nav{
-  display:flex;overflow:auto;gap:8px;margin-top:8px;padding-bottom:4px
+  display:block;overflow-x:auto;overflow-y:hidden;
+  white-space:nowrap;gap:8px;margin-top:8px;padding:6px 12px 2px;
+  scroll-snap-type:x proximity;scroll-padding-inline:12px;
+  -webkit-overflow-scrolling:touch;mask-image:linear-gradient(to left, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
 }
+nav::-webkit-scrollbar{display:none}
 nav button{
-  flex:0 0 auto;
-  border:none;border-radius:999px;padding:10px 14px;background:#ffffff22;color:#fff;font-weight:700
+  scroll-snap-align:start;
+  display:inline-block;border:none;border-radius:999px;padding:10px 14px;margin-inline:4px;
+  background:#ffffff22;color:#fff;font-weight:700
 }
 nav button.active{background:#fff;color:var(--primary)}
+
 main{padding:16px;max-width:1100px;margin:0 auto}
 .section{display:none}
 .section.active{display:block}
+
 .card{
   background:var(--card);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 4px 16px rgba(0,0,0,.08)
 }
 .card h2{margin-top:0}
+
 .grid{display:grid;gap:12px}
 @media(min-width:720px){.grid.cols-2{grid-template-columns:1fr 1fr}}
 
@@ -42,10 +56,23 @@ main{padding:16px;max-width:1100px;margin:0 auto}
 .badge{background:#e3f2fd;border-radius:10px;padding:2px 10px;font-weight:700;display:inline-block;margin-inline-start:8px}
 audio{width:100%}
 
-/* Games */
+.tips{background:#fff;border-radius:12px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.small{font-size:.9rem;color:#456}
+
+/* קנבס רספונסיבי (רוחב 100%; DPI aware ב-JS) */
+.responsive-canvas{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+
+/* מפה */
+#map{width:100%;height:380px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+
+/* משחקים */
 .drag-area{display:flex;gap:8px;flex-wrap:wrap;padding:10px;border:2px dashed #aac9ff;border-radius:12px;min-height:70px;background:#f0f6ff}
-.draggable{user-select:none;padding:8px 12px;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1);border:1px solid #e3ecff;cursor:grab}
 .dropzone{min-height:70px;padding:10px;border:2px dashed #ffd180;background:#fff8e1;border-radius:12px}
+.draggable{
+  user-select:none;padding:8px 12px;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1);
+  border:1px solid #e3ecff;cursor:grab;touch-action:none /* מאפשר גרירה חלקה במגע */
+}
+.dragging-ghost{box-shadow:0 8px 24px rgba(0,0,0,.25);transform:scale(1.03)}
 .correct{outline:3px solid #2ecc71}
 .wrong{outline:3px solid #e53935}
 .game-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
@@ -53,10 +80,6 @@ audio{width:100%}
 @media(min-width:700px){.game-grid{grid-template-columns:repeat(4,1fr)}}
 .tile{background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 #maze{border:2px solid #ccc;border-radius:8px;background:#fff}
-.legend{font-size:.95rem;color:#335}
-/* Map */
-#map{width:100%;height:380px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.12);}
-footer{padding:30px 16px;color:#456;font-size:.9rem}
-.small{font-size:.9rem;color:#456}
-.tips{background:#fff;border-radius:12px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+
+/* נגישות */
 .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
