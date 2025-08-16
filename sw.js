@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rolley-pwa-v2';
+const CACHE_NAME = 'rolley-pwa-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -31,7 +31,7 @@ self.addEventListener('fetch', (e)=>{
     e.respondWith(caches.match(e.request).then(res=> res || fetch(e.request)));
     return;
   }
-  // third-party (OSM tiles, the PDF host may or may not allow caching/CORS)
+  // צד שלישי: OSM tiles + PDF host
   e.respondWith(
     fetch(e.request).then(resp=>{
       const clone = resp.clone();
