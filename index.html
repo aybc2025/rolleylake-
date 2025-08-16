@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>אגם רולי – לומדים ומשחקים</title>
-  <meta name="description" content="אתר אינטראקטיבי בעברית לילדים על Rolley Lake Provincial Park: היסטוריה, גיאולוגיה, צמחים, חיות, שבילים, מפלים וקמפינג – כולל משחקים ו-PWA."/>
+  <meta name="description" content="אתר אינטראקטיבי בעברית לילדים על Rolley Lake Provincial Park: היסטוריה, גיאולוגיה, צמחים, חיות, שבילים, מפלים וקמפינג – כולל משחקים, מפה ו-PWA."/>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1e88e5" />
   <link rel="stylesheet" href="styles.css">
@@ -40,12 +40,14 @@
       <button data-section="trails">שבילים ומפלים</button>
       <button data-section="camping">קמפינג</button>
       <button data-section="map">מפה</button>
+      <button data-section="safety">בטיחות ושמירה</button>
       <button data-section="games">משחקים</button>
       <button data-section="about">מידע ומקורות</button>
     </nav>
   </header>
 
   <main>
+    <!-- דף הבית -->
     <section id="home" class="section active">
       <div class="card grid cols-2">
         <div>
@@ -65,6 +67,7 @@
       </div>
     </section>
 
+    <!-- היסטוריה -->
     <section id="history" class="section">
       <div class="card">
         <h2>היסטוריה <span class="badge">סיפור קצר</span></h2>
@@ -89,6 +92,7 @@
       </div>
     </section>
 
+    <!-- גיאולוגיה -->
     <section id="geology" class="section">
       <div class="card">
         <h2>גיאולוגיה <span class="badge">איך נוצר האגם?</span></h2>
@@ -115,6 +119,7 @@
       </div>
     </section>
 
+    <!-- צמחייה -->
     <section id="flora" class="section">
       <div class="card">
         <h2>צמחייה <span class="badge">מי גדל ביער?</span></h2>
@@ -133,6 +138,7 @@
       </div>
     </section>
 
+    <!-- בעלי חיים -->
     <section id="fauna" class="section">
       <div class="card">
         <h2>בעלי חיים <span class="badge">מי גר כאן?</span></h2>
@@ -151,13 +157,13 @@
       </div>
     </section>
 
+    <!-- שבילים ומפלים -->
     <section id="trails" class="section">
       <div class="card">
         <h2>שבילים ומפלים</h2>
-
         <h3>שביל ההקפה סביב האגם</h3>
         <ul class="big">
-          <li>מסלול מעגלי, מישורי-מתון, מתאים למשפחות. אורך מדווח בטווח ~2.9–5 ק״מ (תלוי בגרסה ובאם מוסיפים ירידה למפלים). זמן טיפוסי: ~40–120 דק׳. גשרונים ועצים, עלול להיות בוצי אחרי גשם. </li>
+          <li>מסלול מעגלי, מישורי-מתון, מתאים למשפחות. אורך מדווח בטווח ~2.9–5 ק״מ (תלוי בגרסה ובאם מוסיפים ירידה למפלים). זמן טיפוסי: ~40–120 דק׳. גשרונים ועצים, עלול להיות בוצי אחרי גשם.</li>
         </ul>
 
         <h3>מפל Rolley Falls</h3>
@@ -186,6 +192,7 @@
       </div>
     </section>
 
+    <!-- קמפינג -->
     <section id="camping" class="section">
       <div class="card">
         <h2>קמפינג</h2>
@@ -208,14 +215,55 @@
       </div>
     </section>
 
+    <!-- מפה -->
     <section id="map" class="section">
       <div class="card">
         <h2>מפה</h2>
-        <div id="map"></div>
-        <p class="small">מפת OpenStreetMap באמצעות Leaflet. סמני החוף/קמפינג/מפלים הם קירובים להמחשה.</p>
+
+        <div class="map-toggle">
+          <button class="btn secondary" id="btnMapOSM" aria-pressed="true">מפת OSM אינטראקטיבית</button>
+          <button class="btn" id="btnMapPDF" aria-pressed="false">מפת ברושור (PDF)</button>
+        </div>
+
+        <!-- OSM -->
+        <div id="mapWrap" class="map-wrap active">
+          <div id="map"></div>
+          <p class="small">מפת OpenStreetMap באמצעות Leaflet. סמני החוף/קמפינג/מפלים הם קירובים להמחשה.</p>
+        </div>
+
+        <!-- PDF -->
+        <div id="pdfWrap" class="map-wrap">
+          <div class="pdf-frame">
+            <iframe
+              id="parkPDF"
+              title="מפת ברושור – Rolley Lake"
+              src="https://nrs.objectstore.gov.bc.ca/kuwyyf/rolley_lake_map_17bbf5abc9.pdf#view=FitH&zoom=page-width"
+              loading="lazy">
+            </iframe>
+          </div>
+          <p class="small">
+            צפה/י במפה הרשמית של הפארק (PDF). אם אינך רואה, פתח/י
+            <a href="https://nrs.objectstore.gov.bc.ca/kuwyyf/rolley_lake_map_17bbf5abc9.pdf" target="_blank" rel="noopener">בקישור ישיר</a>.
+          </p>
+        </div>
       </div>
     </section>
 
+    <!-- בטיחות ושמירה -->
+    <section id="safety" class="section">
+      <div class="card">
+        <h2>בטיחות ושמירה על הטבע</h2>
+        <p id="safetyText">
+          יוצאים לטבע באחריות: הולכים בשבילים מסומנים, שומרים מרחק מחיות בר (במיוחד מדובים),
+          שומרים מזון סגור בקמפינג, ומכבים אש היטב. זוכרים לקחת את האשפה איתנו – מה שמכניסים לפארק גם מוציאים.
+        </p>
+        <div class="tts-row">
+          <button class="btn secondary tts" data-for="safetyText">קריינות</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- מרכז משחקים -->
     <section id="games" class="section">
       <div class="card">
         <h2>מרכז המשחקים</h2>
@@ -230,10 +278,11 @@
       </div>
     </section>
 
+    <!-- אודות -->
     <section id="about" class="section">
       <div class="card">
         <h2>מידע ומקורות</h2>
-        <p class="small">המידע מסוכם ממקורות רשמיים וציבוריים (ראו ייחוסים בהודעה). בדקו תמיד עדכונים/אזהרות בעונה.</p>
+        <p class="small">המידע מסוכם ממקורות רשמיים וציבוריים. בדקו תמיד עדכונים/אזהרות בעונה.</p>
       </div>
     </section>
   </main>
