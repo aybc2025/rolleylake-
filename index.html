@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>אגם רולי – לומדים ומשחקים</title>
+  <meta name="description" content="אתר אינטראקטיבי בעברית לילדים על Rolley Lake Provincial Park: היסטוריה, גיאולוגיה, צמחים, חיות, שבילים, מפלים וקמפינג – כולל משחקים ו-PWA."/>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1e88e5" />
+  <link rel="stylesheet" href="styles.css">
+  <!-- Leaflet (OpenStreetMap) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Icons for iOS -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+  <header>
+    <div class="title">
+      <img src="icons/icon-192.png" alt="סמל אגם רולי"/>
+      <div>
+        <div class="kids-title">אגם רולי – לומדים ומשחקים</div>
+        <div class="small">Rolley Lake Provincial Park, Mission, BC</div>
+      </div>
+    </div>
+    <nav id="topNav" aria-label="ניווט ראשי">
+      <button data-section="home" class="active">דף הבית</button>
+      <button data-section="history">היסטוריה</button>
+      <button data-section="geology">גיאולוגיה</button>
+      <button data-section="flora">צמחייה</button>
+      <button data-section="fauna">בעלי חיים</button>
+      <button data-section="trails">שבילים ומפלים</button>
+      <button data-section="camping">קמפינג</button>
+      <button data-section="map">מפה</button>
+      <button data-section="games">משחקים</button>
+      <button data-section="about">מידע ומקורות</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="section active">
+      <div class="card grid cols-2">
+        <div>
+          <h2>ברוכים הבאים לאגם רולי!</h2>
+          <p class="big">כאן לומדים על האגם והיער בעזרת סיפורים, מפה ומשחקים. אפשר גם לשמוע את הטקסטים בלחיצה על כפתור <strong>הקריינות</strong>.</p>
+          <div class="tips">
+            <strong>טיפ להורים:</strong> האתר עובד כ־PWA – לוחצים על <em>הוספה למסך הבית</em> בדפדפן כדי להתקין ולהשתמש גם בלי אינטרנט. המפה דורשת אינטרנט לטעינת אריחים.
+          </div>
+          <div style="margin-top:10px">
+            <button class="btn" id="installBtn" hidden>התקנה לטלפון</button>
+          </div>
+        </div>
+        <div>
+          <canvas id="lakeArt" width="520" height="260" aria-hidden="true"></canvas>
+          <p class="small">איור דיגיטלי של האגם להמחשה.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="section">
+      <div class="card">
+        <h2>היסטוריה <span class="badge">סיפור קצר</span></h2>
+        <p id="historyText">
+          אגם רולי נמצא בצפון־מזרח מטרו ונקובר, ליד העיר מישן. האזור היה במשך אלפי שנים ביתם של
+          קהילות של העם קאטזי (Katzie) ושאר עמי החוף. ב־1961 הוכרז המקום כפארק פרובינציאלי כדי
+          לשמור על היער, האגם והחוף לציבור. עם השנים נסללו שבילים נוחים סביב האגם ונוצרו אתרי קמפינג
+          למשפחות.
+        </p>
+        <button class="btn secondary tts" data-for="historyText">קריינות</button>
+        <div class="card">
+          <h3>משחק: סדר את הזמן</h3>
+          <p>גררו את האירועים לפי סדר הזמן (מהעבר הרחוק להיום):</p>
+          <div class="game-row">
+            <div id="timelinePool" class="drag-area" aria-label="קלפים לגרירה"></div>
+            <div id="timelineSlots" class="dropzone" aria-label="לוח זמנים"></div>
+          </div>
+          <div><button class="btn" id="checkTimeline">בדיקה</button> <span id="timelineResult" class="legend"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="geology" class="section">
+      <div class="card">
+        <h2>גיאולוגיה <span class="badge">איך נוצר האגם?</span></h2>
+        <p id="geoText">
+          כמו אגמים רבים באזור היערות הרריים של קולומביה הבריטית, אגם רולי נמצא בעמק מעוגל שחֻצב
+          על־ידי קרחונים. אחרי שהקרחונים נמסו, מים מילאו את השקע ויצרו אגם עם חופים חוליים ויער צפוף סביבו.
+        </p>
+        <button class="btn secondary tts" data-for="geoText">קריינות</button>
+        <div class="card">
+          <h3>משחק: בונים אגם</h3>
+          <p>גררו את השכבות לפי הסדר: קרחון → סלע → מים.</p>
+          <div class="game-row">
+            <div id="geoPieces" class="drag-area"></div>
+            <div id="geoStack" class="dropzone" aria-label="קערת האגם"></div>
+          </div>
+          <div><button class="btn" id="checkGeo">בדיקה</button> <span id="geoResult" class="legend"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="flora" class="section">
+      <div class="card">
+        <h2>צמחייה <span class="badge">מי גדל ביער?</span></h2>
+        <p id="floraText">
+          סביב האגם גדלים עצי מחט כמו אשוח דאגלס, צֶדֶר אדום־מערבי והמלוק מערבי, וגם שרכים, אוכמניות
+          וצמחים ביצתיים ליד המים.
+        </p>
+        <button class="btn secondary tts" data-for="floraText">קריינות</button>
+        <div class="card">
+          <h3>משחק: התאימו שם לצמח</h3>
+          <p>גררו את השמות אל הקלפים:</p>
+          <div class="game-grid" id="floraGame"></div>
+          <div><button class="btn" id="resetFlora">אתחול</button> <span id="floraResult" class="legend"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="fauna" class="section">
+      <div class="card">
+        <h2>בעלי חיים <span class="badge">מי גר כאן?</span></h2>
+        <p id="faunaText">
+          באגם וביער אפשר לראות דגים, ציפורים כמו שליו וקרקור, וגם יונקים כמו
+          דוב שחור, דביבון וסנאי. חשוב לשמור מרחק מדובים ולשמור אוכל סגור בקמפינג.
+        </p>
+        <button class="btn secondary tts" data-for="faunaText">קריינות</button>
+        <div class="card">
+          <h3>משחק: מה החיה אוכלת?</h3>
+          <p>גררו את המזון לחיה המתאימה:</p>
+          <div class="game-grid" id="dietGame"></div>
+          <div><button class="btn" id="resetDiet">אתחול</button> <span id="dietResult" class="legend"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trails" class="section">
+      <div class="card">
+        <h2>שבילים ומפלים</h2>
+        <ul class="big">
+          <li><strong>סביב האגם</strong> – לופ קל ומהנה (~5 ק״מ), עובר על גשרוני עץ ליד החוף.</li>
+          <li><strong>מפל רולי (Rolley Falls)</strong> – שביל קצר ויורד לנחל ולמפל. לא מתאים לעגלות.</li>
+          <li><strong>לופ לאגם דֵוילז</strong> – מסלול ארוך יותר למטיילים מנוסים.</li>
+        </ul>
+        <div class="card">
+          <h3>משחק ניווט: מצאו את הדרך למפל</h3>
+          <canvas id="maze" width="360" height="360" aria-label="מבוך למפל"></canvas>
+          <p class="small">הזיזו את הדמות בחיצי המקלדת או בעזרת הכפתורים:</p>
+          <div class="game-row">
+            <button class="btn" data-move="up">מעלה</button>
+            <button class="btn" data-move="down">מטה</button>
+            <button class="btn" data-move="right">ימינה</button>
+            <button class="btn" data-move="left">שמאלה</button>
+          </div>
+          <div id="mazeStatus" class="legend"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="camping" class="section">
+      <div class="card">
+        <h2>קמפינג</h2>
+        <p id="campText">
+          באתר הקמפינג יש אזורי לינה לרכבים ולאוהלים, שירותים ומקלחות, מגרש משחקים וחוף רחצה.
+          חשוב לשמור על הטבע: לא מאכילים חיות, שומרים מזון סגור ומכבים אש היטב.
+        </p>
+        <button class="btn secondary tts" data-for="campText">קריינות</button>
+        <div class="card">
+          <h3>משחק: ארזו לתרמיל</h3>
+          <p>גררו פריטים שמתאימים לקמפינג אל התרמיל. פריטים מיותרים יחזירו נקודות.</p>
+          <div class="game-row">
+            <div id="packItems" class="drag-area"></div>
+            <div id="backpack" class="dropzone" aria-label="תרמיל"></div>
+          </div>
+          <div><button class="btn" id="checkPack">בדיקה</button> <span id="packResult" class="legend"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="section">
+      <div class="card">
+        <h2>מפה</h2>
+        <div id="map"></div>
+        <p class="small">מפת OpenStreetMap באמצעות Leaflet. סמן המפל והחוף הם בערך למיקום להמחשה.</p>
+      </div>
+    </section>
+
+    <section id="games" class="section">
+      <div class="card">
+        <h2>מרכז המשחקים</h2>
+        <p>כל המשחקים זמינים גם מדפים אחרים. בהצלחה!</p>
+        <ul>
+          <li>סדר את הזמן (היסטוריה)</li>
+          <li>בונים אגם (גיאולוגיה)</li>
+          <li>התאימו שם לצמח (צמחייה)</li>
+          <li>מה החיה אוכלת? (בעלי חיים)</li>
+          <li>מצאו את הדרך למפל (שבילים)</li>
+          <li>ארזו לתרמיל (קמפינג)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="card">
+        <h2>מידע ומקורות</h2>
+        <p class="small">
+          התוכן מבוסס על מקורות ציבוריים: אתר BC Parks, עיריית Mission, AllTrails ועוד.
+          ראה קרדיטים בעמוד ההוראות בהורדה.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    נבנה לילדים – בעברית – עם מפה, משחקים ו־PWA. © 2025
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // Service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
