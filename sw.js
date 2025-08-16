@@ -8,7 +8,7 @@ const ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 ];
 
 self.addEventListener('install', (e)=>{
@@ -31,6 +31,7 @@ self.addEventListener('fetch', (e)=>{
     e.respondWith(caches.match(e.request).then(res=> res || fetch(e.request)));
     return;
   }
+  // third-party (OSM tiles, the PDF host may or may not allow caching/CORS)
   e.respondWith(
     fetch(e.request).then(resp=>{
       const clone = resp.clone();
