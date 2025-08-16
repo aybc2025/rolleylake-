@@ -1,343 +1,70 @@
-<!doctype html>
-<html lang="he" dir="rtl">
+<!DOCTYPE html>
+<html lang="he">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>אגם רולי – לומדים ומשחקים</title>
-  <meta name="description" content="אתר אינטראקטיבי בעברית לילדים על Rolley Lake Provincial Park: היסטוריה, גיאולוגיה, צמחים, חיות, שבילים, מפלים וקמפינג – כולל משחקים, מפה ו-PWA."/>
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1e88e5" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>אגם רוליי – לומדים ומשחקים</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Leaflet (OpenStreetMap) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <!-- iOS icons -->
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 </head>
 <body>
   <header>
-    <div class="title">
-      <img src="icons/icon-192.png" alt="סמל אגם רולי"/>
-      <div>
-        <div class="kids-title">אגם רולי – לומדים ומשחקים</div>
-        <div class="small">Rolley Lake Provincial Park, Mission, BC</div>
-      </div>
-      <div class="header-actions">
-        <button class="btn tiny" id="stopTTS" title="עצור קריינות">עצור קריינות</button>
-      </div>
-    </div>
-
-    <nav id="topNav" aria-label="ניווט ראשי">
-      <button data-section="home" class="active">דף הבית</button>
-      <button data-section="history">היסטוריה</button>
-      <button data-section="geology">גיאולוגיה</button>
-      <button data-section="flora">צמחייה</button>
-      <button data-section="fauna">בעלי חיים</button>
-      <button data-section="trails">שבילים ומפלים</button>
-      <button data-section="camping">קמפינג</button>
-      <button data-section="map">מפה</button>
-      <button data-section="safety">בטיחות ושמירה</button>
-      <button data-section="games">משחקים</button>
-      <button data-section="glossary">אוצר מילים</button>
-      <button data-section="about">מידע ומקורות</button>
-    </nav>
+    <h1>אגם רוליי – לומדים ומשחקים</h1>
+    <p>Rolley Lake Provincial Park, Mission, BC</p>
   </header>
 
-  <main>
-    <!-- דף הבית -->
-    <section id="home" class="section active">
-      <div class="card grid cols-2">
-        <div>
-          <h2>ברוכים הבאים לאגם רולי!</h2>
-          <p class="big">כאן לומדים על האגם והיער בעזרת סיפורים, מפה ומשחקים. אפשר גם לשמוע את הטקסטים בלחיצה על <strong>הקריינות</strong>.</p>
-          <div class="tips">
-            <strong>טיפ להורים:</strong> האתר עובד כ־PWA – לחצו <em>הוספה למסך הבית</em> כדי להתקין. המפה דורשת אינטרנט לטעינת אריחים; שאר המשחקים עובדים גם אופליין אחרי טעינה ראשונית.
-          </div>
-          <div style="margin-top:10px">
-            <button class="btn" id="installBtn" hidden>התקנה לטלפון</button>
-          </div>
-        </div>
-        <div>
-          <canvas id="lakeArt" width="520" height="260" aria-hidden="true"></canvas>
-          <p class="small">איור דיגיטלי של האגם להמחשה.</p>
-        </div>
+  <nav>
+    <button onclick="showSection('mapSection')">מפות</button>
+    <button onclick="showSection('trailsSection')">שבילים ומפלים</button>
+    <button onclick="showSection('campingSection')">קמפינג</button>
+    <button onclick="showSection('natureSection')">בעלי חיים</button>
+  </nav>
+
+  <!-- מפות -->
+  <section id="mapSection" class="section">
+    <div class="card">
+      <h2>מפות רוליי לייק</h2>
+
+      <!-- מפה אינטראקטיבית -->
+      <div id="map" class="map-wrap"></div>
+
+      <!-- מפה רשמית PDF -->
+      <div class="pdf-frame">
+        <iframe src="https://nrs.objectstore.gov.bc.ca/kuwyyf/rolley_lake_map_17bbf5abc9.pdf"></iframe>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- היסטוריה -->
-    <section id="history" class="section">
-      <div class="card">
-        <h2>היסטוריה <span class="badge">סיפור קצר</span></h2>
-        <p id="historyText">
-          אגם רולי נמצא בצפון־מזרח מטרו ונקובר, ליד העיר מישן. האזור היה במשך אלפי שנים ביתם של
-          קהילות ילידיות בחוף הפאסיפי. ב־1961 הוכרז המקום כפארק פרובינציאלי כדי לשמור על היער, האגם והחוף לציבור.
-          עם השנים נסללו שבילים נוחים סביב האגם ונוצרו אתרי קמפינג למשפחות.
-        </p>
-        <div class="tts-row">
-          <button class="btn secondary tts" data-for="historyText">קריינות</button>
-        </div>
+  <!-- שבילים ומפלים -->
+  <section id="trailsSection" class="section hidden">
+    <div class="card">
+      <h2>שבילים ומפלים</h2>
+      <p>סביב האגם יש שביל מעגלי באורך כ-3 ק"מ, המתאים למשפחות. בסמוך יש את מפלי Rolley Falls – מסלול קצר נוסף מוביל לנקודת תצפית מרשימה.</p>
+    </div>
+  </section>
 
-        <div class="card">
-          <h3>משחק: סדר את הזמן</h3>
-          <p>בטאץ׳: הקישו על קלף ואז הקישו על <u>לוח הזמן</u>. במחשב: אפשר גם לגרור.</p>
-          <div class="game-row">
-            <div id="timelinePool" class="drag-area" aria-label="קלפים לגרירה"></div>
-            <div id="timelineSlots" class="dropzone" aria-label="לוח זמנים"></div>
-          </div>
-          <div><button class="btn" id="checkTimeline">בדיקה</button> <span id="timelineResult" class="legend" aria-live="polite"></span></div>
-        </div>
-      </div>
-    </section>
+  <!-- קמפינג -->
+  <section id="campingSection" class="section hidden">
+    <div class="card">
+      <h2>קמפינג באגם רוליי</h2>
+      <p>באתר הקמפינג יש כ-64 מקומות לאוהלים וקראוונים, חוף רחצה קטן, מים לשתייה ושירותים. ניתן להזמין מקומות דרך אתר BC Parks.</p>
+    </div>
+  </section>
 
-    <!-- גיאולוגיה -->
-    <section id="geology" class="section">
-      <div class="card">
-        <h2>גיאולוגיה <span class="badge">איך נוצר האגם?</span></h2>
-        <p id="geoText">
-          קרחונים בעבר חצבו עמקים באזור. אחרי ההפשרה, מים מילאו את השקע ונוצר אגם עם חופים חוליים ויער סביב.
-        </p>
-        <div class="tts-row">
-          <button class="btn secondary tts" data-for="geoText">קריינות</button>
-        </div>
-
-        <div class="card">
-          <h3>משחק: בונים אגם</h3>
-          <p>סדר נכון: <strong>קרחון → סלע → מים</strong>. בטאץ׳: הקישו על שכבה ואז על קערת האגם.</p>
-          <div class="game-row">
-            <div id="geoPieces" class="drag-area"></div>
-            <div id="geoStack" class="dropzone bowl" aria-label="קערת האגם">
-              <div class="layer ghost ice">קרחון</div>
-              <div class="layer ghost rock">סלע</div>
-              <div class="layer ghost water">מים</div>
-            </div>
-          </div>
-          <div><button class="btn" id="checkGeo">בדיקה</button> <span id="geoResult" class="legend" aria-live="polite"></span></div>
-        </div>
-
-        <div class="card">
-          <h3>קומיקס: מסע טיפת מים</h3>
-          <div id="comic" class="comic">
-            <div class="panel" id="panelText">☁️ טיפה נולדה בענן גבוה… מוכנים למסע?</div>
-            <div class="comic-controls">
-              <button class="btn" id="comicPrev" disabled>אחורה</button>
-              <button class="btn secondary" id="comicNext">המשך</button>
-              <button class="btn tiny" id="comicTTS">קריינות</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- צמחייה -->
-    <section id="flora" class="section">
-      <div class="card">
-        <h2>צמחייה <span class="badge">מי גדל ביער?</span></h2>
-        <p id="floraText">
-          סביב האגם גדלים עצי מחט כמו אשוח דאגלס, צֶדֶר אדום־מערבי והמלוק מערבי, וגם שרכים, אוכמניות וצמחי מים.
-        </p>
-        <div class="tts-row">
-          <button class="btn secondary tts" data-for="floraText">קריינות</button>
-        </div>
-        <div class="card">
-          <h3>משחק: התאימו שם לצמח</h3>
-          <p>בטאץ׳: הקישו על שם ואז על הכרטיס המתאים. במחשב: אפשר גם לגרור.</p>
-          <div class="game-grid" id="floraGame"></div>
-          <div><button class="btn" id="resetFlora">אתחול</button> <span id="floraResult" class="legend" aria-live="polite"></span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- בעלי חיים -->
-    <section id="fauna" class="section">
-      <div class="card">
-        <h2>בעלי חיים <span class="badge">מי גר כאן?</span></h2>
-        <p id="faunaText">
-          באגם וביער אפשר לראות דגים, ציפורים וגם יונקים כמו דוב שחור, דביבון וסנאי. חשוב לשמור מרחק מדובים ולשמור אוכל סגור בקמפינג.
-        </p>
-        <div class="tts-row">
-          <button class="btn secondary tts" data-for="faunaText">קריינות</button>
-        </div>
-
-        <div class="card">
-          <h3>מי גר ביער? – חיפוש</h3>
-          <p>הקישו על הנקודות במפה המצוירת כדי לגלות חיות, עקבות וקולות.</p>
-          <div id="seekWrap" class="seek-wrap">
-            <div class="seek-map" id="seekMap" aria-label="מפה מאוירת עם נקודות חמות"></div>
-            <div id="seekInfo" class="seek-info">הקישו על נקודה כדי לגלות!</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>משחק: מה החיה אוכלת?</h3>
-          <p>בטאץ׳: הקישו על האוכל ואז על החיה. במחשב: אפשר גם לגרור.</p>
-          <div class="game-grid" id="dietGame"></div>
-          <div><button class="btn" id="resetDiet">אתחול</button> <span id="dietResult" class="legend" aria-live="polite"></span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- שבילים ומפלים -->
-    <section id="trails" class="section">
-      <div class="card">
-        <h2>שבילים ומפלים</h2>
-        <h3>שביל ההקפה סביב האגם</h3>
-        <ul class="big">
-          <li>מסלול מעגלי, מישורי-מתון, מתאים למשפחות. אורך מדווח בטווח ~2.9–5 ק״מ (תלוי בגרסה ובאם מוסיפים ירידה למפלים). זמן טיפוסי: ~40–120 דק׳. גשרונים ועצים, עלול להיות בוצי אחרי גשם.</li>
-        </ul>
-
-        <h3>מפל Rolley Falls</h3>
-        <ul class="big">
-          <li>שביל קצר היורד לנחל ולתצפיות. <strong>הליכה בלבד</strong> (לא מתאים לעגלות) בגלל רגישות השביל והתשתיות.</li>
-        </ul>
-
-        <div class="card">
-          <h3>משחק ניווט: מצאו את הדרך למפל</h3>
-          <canvas id="maze" width="360" height="360" aria-label="מבוך למפל"></canvas>
-          <p class="small">הזיזו את הדמות בחיצי המקלדת או בכפתורים:</p>
-          <div class="game-row">
-            <button class="btn" data-move="up">מעלה</button>
-            <button class="btn" data-move="down">מטה</button>
-            <button class="btn" data-move="right">ימינה</button>
-            <button class="btn" data-move="left">שמאלה</button>
-          </div>
-          <div id="mazeStatus" class="legend" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- קמפינג -->
-    <section id="camping" class="section">
-      <div class="card">
-        <h2>קמפינג</h2>
-        <ul class="big">
-          <li><strong>אתרים:</strong> קיימים אתרים נגישים לרכב וגם אתרי הליכה-רגלית (Walk-in). ההזמנות מתבצעות באתר BC Parks, לרוב עד כ-4 חודשים מראש.</li>
-          <li><strong>שירותים ומתקנים לדוגמה:</strong> אזור יום וחוף, מקלחות, שירותים, ברזיות, מגרש משחקים, תחנת ריקון (Sani-station), מדורות לפי הכללים.</li>
-          <li><strong>כלבים:</strong> ברצועה (עד 2 מ׳), לא באזור החוף ובמבנים.</li>
-          <li><strong>כרטיסי Day-Use:</strong> בקיץ 2025 כרטיסים נדרשים רק בפארקים מסוימים (כמו Garibaldi/Joffre/Golden Ears); רולי אינו נמנה איתם. בדקו עמוד עדכני לפני יציאה.</li>
-        </ul>
-
-        <div class="card">
-          <h3>משחק: ארזו לתרמיל</h3>
-          <p>הקישו על פריט מתאים ואז על התרמיל. פריטים מיותרים יורידו נקודות.</p>
-          <div class="game-row">
-            <div id="packItems" class="drag-area"></div>
-            <div id="backpack" class="dropzone" aria-label="תרמיל"></div>
-          </div>
-          <div><button class="btn" id="checkPack">בדיקה</button> <span id="packResult" class="legend" aria-live="polite"></span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- מפה -->
-    <section id="map" class="section">
-      <div class="card">
-        <h2>מפה</h2>
-
-        <div class="map-toggle">
-          <button class="btn secondary" id="btnMapOSM" aria-pressed="true">מפת OSM אינטראקטיבית</button>
-          <button class="btn" id="btnMapPDF" aria-pressed="false">מפת ברושור (PDF)</button>
-          <label class="track">
-            <input type="checkbox" id="toggleTrail" checked>
-            <span>הצג מסלול ההקפה + מפלים</span>
-          </label>
-        </div>
-
-        <!-- OSM -->
-        <div id="mapWrap" class="map-wrap active">
-          <div id="map"></div>
-          <p class="small">מפת OpenStreetMap באמצעות Leaflet. סמני החוף/קמפינג/מפלים הם קירובים להמחשה.</p>
-        </div>
-
-        <!-- PDF -->
-        <div id="pdfWrap" class="map-wrap">
-          <div class="pdf-frame">
-            <iframe
-              id="parkPDF"
-              title="מפת ברושור – Rolley Lake"
-              src="https://nrs.objectstore.gov.bc.ca/kuwyyf/rolley_lake_map_17bbf5abc9.pdf#view=FitH&zoom=page-width"
-              loading="lazy">
-            </iframe>
-          </div>
-          <p class="small">
-            צפה/י במפה הרשמית של הפארק (PDF). אם אינך רואה, פתח/י
-            <a href="https://nrs.objectstore.gov.bc.ca/kuwyyf/rolley_lake_map_17bbf5abc9.pdf" target="_blank" rel="noopener">בקישור ישיר</a>.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- בטיחות ושמירה -->
-    <section id="safety" class="section">
-      <div class="card">
-        <h2>בטיחות ושמירה על הטבע</h2>
-        <p id="safetyText">
-          יוצאים לטבע באחריות: הולכים בשבילים מסומנים, שומרים מרחק מחיות בר (במיוחד מדובים),
-          שומרים מזון סגור בקמפינג, ומכבים אש היטב. זוכרים לקחת את האשפה איתנו – מה שמכניסים לפארק גם מוציאים.
-        </p>
-        <div class="tts-row">
-          <button class="btn secondary tts" data-for="safetyText">קריינות</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>שומרי היער – חידון מהיר</h3>
-        <div id="quiz" class="quiz"></div>
-        <div class="game-row">
-          <button class="btn" id="quizCheck">בדיקה</button>
-          <span id="quizResult" class="legend" aria-live="polite"></span>
-        </div>
-      </div>
-    </section>
-
-    <!-- מרכז משחקים -->
-    <section id="games" class="section">
-      <div class="card">
-        <h2>מרכז המשחקים</h2>
-        <ul>
-          <li>סדר את הזמן (היסטוריה)</li>
-          <li>בונים אגם (גיאולוגיה)</li>
-          <li>קומיקס: מסע טיפת מים</li>
-          <li>מי גר ביער? (חיפוש)</li>
-          <li>מה החיה אוכלת? (בעלי חיים)</li>
-          <li>מצאו את הדרך למפל (שבילים)</li>
-          <li>ארזו לתרמיל (קמפינג)</li>
-          <li>שומרי היער – חידון</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- אוצר מילים -->
-    <section id="glossary" class="section">
-      <div class="card">
-        <h2>אוצר מילים</h2>
-        <div id="glossaryWrap" class="glossary"></div>
-      </div>
-    </section>
-
-    <!-- אודות -->
-    <section id="about" class="section">
-      <div class="card">
-        <h2>מידע ומקורות</h2>
-        <p class="small">המידע מסוכם ממקורות רשמיים וציבוריים. בדקו תמיד עדכונים/אזהרות בעונה.</p>
-      </div>
-    </section>
-  </main>
+  <!-- טבע ובעלי חיים -->
+  <section id="natureSection" class="section hidden">
+    <div class="card">
+      <h2>בעלי חיים וצמחייה</h2>
+      <p>סביב האגם ניתן לפגוש ברווזים, דגים, דובים שחורים ולעיתים איילים. הצמחייה כוללת עצי אשוח, ארז ואוכמניות.</p>
+    </div>
+  </section>
 
   <footer>
-    נבנה לילדים – בעברית – עם מפה, משחקים ו־PWA. © 2025
+    <p>נבנה לילדים – בעברית – עם מפה, משחקים ו-PWA. © 2025</p>
   </footer>
 
   <script src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
-  </script>
 </body>
 </html>
