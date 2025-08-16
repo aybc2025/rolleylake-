@@ -5,33 +5,30 @@
   --text:#0c2540;
   --card:#ffffff;
 }
-
-/* בסיס */
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);
-  font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans','Helvetica Neue',Arial,'Apple Color Emoji','Segoe UI Emoji'}
-/* כותרת דביקה + safe areas */
+html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Helvetica Neue",Arial}
+img,canvas,video{max-width:100%;height:auto}
+
 header{
   position:sticky;top:0;z-index:1000;
   background:linear-gradient(90deg,var(--primary),var(--accent));
-  color:#fff;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 10px 12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.15)
+  color:#fff;padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.15)
 }
 header .title{display:flex;align-items:center;gap:10px}
 header .title img{width:28px;height:28px}
+.header-actions{margin-inline-start:auto}
+.btn.tiny{padding:6px 10px;border-radius:10px;font-size:.85rem}
 
-/* ניווט – גלילה אופקית חלקה במובייל */
 nav{
-  display:block;overflow-x:auto;overflow-y:hidden;
-  white-space:nowrap;gap:8px;margin-top:8px;padding:6px 12px 2px;
-  scroll-snap-type:x proximity;scroll-padding-inline:12px;
-  -webkit-overflow-scrolling:touch;mask-image:linear-gradient(to left, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
+  display:flex;gap:8px;margin-top:8px;padding-bottom:6px;
+  overflow-x:auto;white-space:nowrap;scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch
 }
-nav::-webkit-scrollbar{display:none}
+nav::-webkit-scrollbar{height:6px}
+nav::-webkit-scrollbar-thumb{background:#ffffff55;border-radius:999px}
 nav button{
-  scroll-snap-align:start;
-  display:inline-block;border:none;border-radius:999px;padding:10px 14px;margin-inline:4px;
-  background:#ffffff22;color:#fff;font-weight:700
+  flex:0 0 auto;scroll-snap-align:start;
+  border:none;border-radius:999px;padding:10px 14px;background:#ffffff22;color:#fff;font-weight:700
 }
 nav button.active{background:#fff;color:var(--primary)}
 
@@ -43,43 +40,45 @@ main{padding:16px;max-width:1100px;margin:0 auto}
   background:var(--card);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 4px 16px rgba(0,0,0,.08)
 }
 .card h2{margin-top:0}
-
 .grid{display:grid;gap:12px}
 @media(min-width:720px){.grid.cols-2{grid-template-columns:1fr 1fr}}
 
 .btn{
-  background:var(--primary);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:700
+  background:var(--primary);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer
 }
 .btn.secondary{background:var(--accent);color:#00333a}
 .kids-title{font-size:1.4rem;font-weight:800;margin:6px 0 12px}
-.big{font-size:1.25rem}
+.big{font-size:1.05rem;line-height:1.6}
 .badge{background:#e3f2fd;border-radius:10px;padding:2px 10px;font-weight:700;display:inline-block;margin-inline-start:8px}
 audio{width:100%}
+.tts-row{margin-top:6px}
 
-.tips{background:#fff;border-radius:12px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.small{font-size:.9rem;color:#456}
-
-/* קנבס רספונסיבי (רוחב 100%; DPI aware ב-JS) */
-.responsive-canvas{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
-
-/* מפה */
-#map{width:100%;height:380px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
-
-/* משחקים */
-.drag-area{display:flex;gap:8px;flex-wrap:wrap;padding:10px;border:2px dashed #aac9ff;border-radius:12px;min-height:70px;background:#f0f6ff}
-.dropzone{min-height:70px;padding:10px;border:2px dashed #ffd180;background:#fff8e1;border-radius:12px}
-.draggable{
-  user-select:none;padding:8px 12px;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1);
-  border:1px solid #e3ecff;cursor:grab;touch-action:none /* מאפשר גרירה חלקה במגע */
-}
-.dragging-ghost{box-shadow:0 8px 24px rgba(0,0,0,.25);transform:scale(1.03)}
+/* Games */
+.drag-area{display:flex;gap:8px;flex-wrap:wrap;padding:10px;border:2px dashed #aac9ff;border-radius:12px;min-height:74px;background:#f0f6ff}
+.draggable{user-select:none;padding:10px 12px;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.1);border:1px solid #e3ecff;cursor:grab;touch-action:manipulation}
+.draggable.selected{outline:3px solid #2196f3}
+.dropzone{min-height:74px;padding:10px;border:2px dashed #ffd180;background:#fff8e1;border-radius:12px}
 .correct{outline:3px solid #2ecc71}
 .wrong{outline:3px solid #e53935}
 .game-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:700px){.game-grid{grid-template-columns:repeat(4,1fr)}}
 .tile{background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-#maze{border:2px solid #ccc;border-radius:8px;background:#fff}
+.legend{font-size:.95rem;color:#335}
 
-/* נגישות */
+/* Geology bowl + layers */
+.bowl{position:relative;min-height:160px;background:linear-gradient(#fff,#fff8e1)}
+.layer{position:relative;margin:6px 0;border-radius:8px;padding:8px 10px;color:#fff;font-weight:700;text-align:center}
+.layer.ghost{opacity:.25}
+.layer.ice{background:#90caf9}
+.layer.rock{background:#8d6e63}
+.layer.water{background:#42a5f5}
+
+/* Map */
+#map{width:100%;height:420px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+
+/* Footer */
+footer{padding:30px 16px;color:#456;font-size:.9rem}
+.small{font-size:.9rem;color:#456}
+.tips{background:#fff;border-radius:12px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
