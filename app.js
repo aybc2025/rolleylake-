@@ -78,19 +78,19 @@ document.getElementById('stopTTS')?.addEventListener('click', stopSpeak);
 document.querySelectorAll('.tts').forEach(btn=> btn.addEventListener('click', ()=> speakText(btn.dataset.for)));
 
 /************ MAP (Leaflet + OSM + Trail Polyline) ************/
-let mapInited = false, trailLayer=null;
+let mapInited = false, trailLayer=null, leafletMap=null;
 function initMap(){
   if(mapInited) return;
   const mapEl = document.getElementById('map'); if(!mapEl) return;
   const center = [49.243889,-122.386944], falls=[49.2398,-122.3925], beach=[49.2453,-122.3840], camp=[49.2445,-122.3864];
-  const map = L.map('map', { tap: true }).setView(center, 14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(map);
-  L.marker(center).addTo(map).bindPopup('אגם רולי – מרכז הפארק');
-  L.marker(falls).addTo(map).bindPopup('מפל רולי (משוער)');
-  L.marker(beach).addTo(map).bindPopup('חוף רחצה (משוער)');
-  L.marker(camp).addTo(map).bindPopup('אתר קמפינג (משוער)');
+  leafletMap = L.map('map', { tap: true }).setView(center, 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(leafletMap);
+  L.marker(center).addTo(leafletMap).bindPopup('אגם רולי – מרכז הפארק');
+  L.marker(falls).addTo(leafletMap).bindPopup('מפל רולי (משוער)');
+  L.marker(beach).addTo(leafletMap).bindPopup('חוף רחצה (משוער)');
+  L.marker(camp).addTo(leafletMap).bindPopup('אתר קמפינג (משוער)');
 
-  // GeoJSON משוער (פוליליין): לופ האגם + שלוחת מפלים (נקודות מקורבות להמחשה)
+  // GeoJSON משוער (פוליליין): לופ האגם + שלוחת מפלים (קירוב להמחשה)
   const trail = {
     "type":"FeatureCollection",
     "features":[
@@ -105,39 +105,52 @@ function initMap(){
       ]}}
     ]
   };
-  trailLayer = L.geoJSON(trail,{style:{weight:4}}).addTo(map);
+  trailLayer = L.geoJSON(trail,{style:{weight:4}}).addTo(leafletMap);
   mapInited = true;
 }
+
+/************ MAP TOGGLE (OSM / PDF) – FIXED ************/
 function initMapToggle(){
   const btnOSM = document.getElementById('btnMapOSM');
   const btnPDF = document.getElementById('btnMapPDF');
   const osmWrap = document.getElementById('mapWrap');
   const pdfWrap = document.getElementById('pdfWrap');
   const toggleTrail = document.getElementById('toggleTrail');
-  if(!btnOSM || !btnPDF || !osmWrap || !pdfWrap || !toggleTrail) return;
+  const trailLabel = toggleTrail?.closest('.track'); // כדי להסתיר בעת מצב PDF
+  if(!btnOSM || !btnPDF || !osmWrap || !pdfWrap) return;
 
-  function setMode(mode){
-    const osm = (mode === 'osm');
-    osmWrap.classList.toggle('active', osm);
-    pdfWrap.classList.toggle('active', !osm);
-    btnOSM.classList.toggle('secondary', !osm);
-    btnOSM.setAttribute('aria-pressed', String(osm));
-    btnPDF.classList.toggle('secondary', osm);
-    btnPDF.setAttribute('aria-pressed', String(!osm));
+  let currentMode = 'osm';
+  function setActiveButton(){
+    [btnOSM, btnPDF].forEach(b=>b.classList.remove('mode-active'));
+    (currentMode==='osm'? btnOSM : btnPDF).classList.add('mode-active');
+    btnOSM.setAttribute('aria-pressed', String(currentMode==='osm'));
+    btnPDF.setAttribute('aria-pressed', String(currentMode==='pdf'));
   }
+  function setMode(mode){
+    currentMode = mode;
+    const isOSM = (mode==='osm');
+    osmWrap.classList.toggle('active', isOSM);
+    pdfWrap.classList.toggle('active', !isOSM);
+    // הצגת מתג המסלול רק כשמפת OSM פעילה
+    if(trailLabel){ trailLabel.classList.toggle('hidden', !isOSM); }
+    setActiveButton();
+    // כאשר חוזרים למפה אחרי PDF—לתקן גודל אריחים
+    if(isOSM && leafletMap){ setTimeout(()=> leafletMap.invalidateSize(), 50); }
+  }
+
   btnOSM.onclick = ()=> setMode('osm');
   btnPDF.onclick = ()=> setMode('pdf');
+  setMode('osm');
 
-  toggleTrail.onchange = ()=>{
-    if(!trailLayer) return;
-    if(toggleTrail.checked){ trailLayer.addTo(L._leaflet_id ? null : null); } // no-op if already on
-    // נוודא שאם מכבים – פשוט נסיר מהמפה (נאתר את המפה מהשכבה)
-    const m = trailLayer? trailLayer._map : null;
-    if(m && !toggleTrail.checked){ m.removeLayer(trailLayer); }
-    if(m && toggleTrail.checked && !m.hasLayer(trailLayer)) trailLayer.addTo(m);
-  };
-
-  setMode('osm'); // ברירת מחדל
+  // כיבוי/הדלקת שכבת מסלול
+  if(toggleTrail){
+    toggleTrail.onchange = ()=>{
+      if(!leafletMap || !trailLayer) return;
+      const on = toggleTrail.checked;
+      if(on && !leafletMap.hasLayer(trailLayer)) leafletMap.addLayer(trailLayer);
+      if(!on && leafletMap.hasLayer(trailLayer)) leafletMap.removeLayer(trailLayer);
+    };
+  }
 }
 
 /************ TAP-TO-DROP HELPERS ************/
@@ -196,7 +209,7 @@ function initTimeline(){
   };
 }
 
-/************ GEOLOGY GAME ************/
+/************ GEOLOGY GAME + COMIC ************/
 const geoPiecesSrc = [
   {id:'ice', label:'קרחון'},
   {id:'rock', label:'סלע'},
@@ -229,7 +242,6 @@ function initGeoGame(){
   };
 }
 
-/************ GEOLOGY COMIC ************/
 const panels = [
   "☁️ טיפה נולדה בענן גבוה. הרוח מזיזה את הענן מעל ההרים.",
   "🌧️ עננים מתקררים – גשם יורד! הטיפה נופלת על ההר הקר.",
@@ -252,7 +264,7 @@ function initComic(){
   tts.onclick=()=> speak(panels[panelIdx]);
 }
 
-/************ FLORA GAME ************/
+/************ FLORA ************/
 const floraCards = [
   {id:'douglas', name:'אשוח דאגלס', emoji:'🌲'},
   {id:'cedar',   name:'צדר אדום־מערבי', emoji:'🪵'},
@@ -287,7 +299,7 @@ function initFloraGame(){
   document.getElementById('resetFlora').onclick = initFloraGame;
 }
 
-/************ FAUNA DIET GAME ************/
+/************ FAUNA: DIET + SEEK ************/
 const dietPairs = [
   {animal:'דוב שחור',  food:'פירות וגרגרים', emoji:'🐻'},
   {animal:'דג טרוטה',  food:'חרקים קטנים',   emoji:'🐟'},
@@ -322,7 +334,6 @@ function initDietGame(){
   document.getElementById('resetDiet').onclick = initDietGame;
 }
 
-/************ SEEK GAME (hotspots) ************/
 const hotspots = [
   {x:15,y:20, emoji:'🦆', title:'ברווז', txt:'גר בצמחי המים של שפת האגם.'},
   {x:65,y:35, emoji:'🐿️', title:'סנאי', txt:'אוהב זרעים ואגוזים ליד העצים.'},
@@ -331,8 +342,7 @@ const hotspots = [
 ];
 function initSeek(){
   const wrap=document.getElementById('seekMap'), info=document.getElementById('seekInfo'); if(!wrap || !info) return;
-  wrap.innerHTML=''; // ציור רקע פשוט
-  wrap.style.backgroundImage='radial-gradient(circle at 30% 40%, #b9f6ca 0, #a5d6a7 40%, #81c784 60%)';
+  wrap.innerHTML=''; wrap.style.backgroundImage='radial-gradient(circle at 30% 40%, #b9f6ca 0, #a5d6a7 40%, #81c784 60%)';
   hotspots.forEach(h=>{
     const dot=document.createElement('button'); dot.className='hotspot'; dot.style.left=h.x+'%'; dot.style.top=h.y+'%'; dot.style.transform='translate(-50%,-50%)';
     dot.innerText=h.emoji; dot.title=h.title;
@@ -401,12 +411,16 @@ function initPackGame(){
   };
 }
 
-/************ SAFETY QUIZ ************/
+/************ SAFETY QUIZ – MORE QUESTIONS ************/
 const quizQs = [
   {q:'רואים דוב ליד השביל. מתקרבים לצלם?', a:false},
   {q:'מכבים מדורה במים ושמים יד על האפר לוודא שהתקרר.', a:true},
   {q:'משאירים אוכל פתוח על השולחן בלילה.', a:false},
-  {q:'הולכים רק בשבילים מסומנים ושומרים על הטבע.', a:true}
+  {q:'הולכים רק בשבילים מסומנים ושומרים על הטבע.', a:true},
+  {q:'מאכילים ברווזים בלחם כדי שישמחו.', a:false},
+  {q:'קושרים את הכלב ברצועה קצרה ליד אנשים אחרים.', a:true},
+  {q:'אם יש שלוליות ובוץ, עדיף ליצור “שביל חדש” בצד היער.', a:false},
+  {q:'שמים פעמון/מדברים בקול רם בשביל כדי שחיות ישמעו אותנו.', a:true}
 ];
 function initQuiz(){
   const wrap=document.getElementById('quiz'); if(!wrap) return; wrap.innerHTML='';
@@ -456,3 +470,4 @@ function initGlossary(){
 
 /************ INIT DEFAULT ************/
 initTimeline(); initGeoGame(); initComic(); initFloraGame(); initDietGame(); initSeek(); initQuiz(); initGlossary();
+
