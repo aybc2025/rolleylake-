@@ -42,6 +42,7 @@
       <button data-section="map">מפה</button>
       <button data-section="safety">בטיחות ושמירה</button>
       <button data-section="games">משחקים</button>
+      <button data-section="glossary">אוצר מילים</button>
       <button data-section="about">מידע ומקורות</button>
     </nav>
   </header>
@@ -116,6 +117,18 @@
           </div>
           <div><button class="btn" id="checkGeo">בדיקה</button> <span id="geoResult" class="legend" aria-live="polite"></span></div>
         </div>
+
+        <div class="card">
+          <h3>קומיקס: מסע טיפת מים</h3>
+          <div id="comic" class="comic">
+            <div class="panel" id="panelText">☁️ טיפה נולדה בענן גבוה… מוכנים למסע?</div>
+            <div class="comic-controls">
+              <button class="btn" id="comicPrev" disabled>אחורה</button>
+              <button class="btn secondary" id="comicNext">המשך</button>
+              <button class="btn tiny" id="comicTTS">קריינות</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -148,6 +161,16 @@
         <div class="tts-row">
           <button class="btn secondary tts" data-for="faunaText">קריינות</button>
         </div>
+
+        <div class="card">
+          <h3>מי גר ביער? – חיפוש</h3>
+          <p>הקישו על הנקודות במפה המצוירת כדי לגלות חיות, עקבות וקולות.</p>
+          <div id="seekWrap" class="seek-wrap">
+            <div class="seek-map" id="seekMap" aria-label="מפה מאוירת עם נקודות חמות"></div>
+            <div id="seekInfo" class="seek-info">הקישו על נקודה כדי לגלות!</div>
+          </div>
+        </div>
+
         <div class="card">
           <h3>משחק: מה החיה אוכלת?</h3>
           <p>בטאץ׳: הקישו על האוכל ואז על החיה. במחשב: אפשר גם לגרור.</p>
@@ -183,12 +206,6 @@
           </div>
           <div id="mazeStatus" class="legend" aria-live="polite"></div>
         </div>
-
-        <h3>חוף הרחצה (Day-Use)</h3>
-        <ul class="big">
-          <li>חוף חולי ומתון; <strong>אין מציל</strong>. הרחצה באחריות המשתמש.</li>
-          <li>כלבים ברצועה בפארק, אך <strong>לא מורשים באזור חוף הרחצה והפיקניק</strong>.</li>
-        </ul>
       </div>
     </section>
 
@@ -223,6 +240,10 @@
         <div class="map-toggle">
           <button class="btn secondary" id="btnMapOSM" aria-pressed="true">מפת OSM אינטראקטיבית</button>
           <button class="btn" id="btnMapPDF" aria-pressed="false">מפת ברושור (PDF)</button>
+          <label class="track">
+            <input type="checkbox" id="toggleTrail" checked>
+            <span>הצג מסלול ההקפה + מפלים</span>
+          </label>
         </div>
 
         <!-- OSM -->
@@ -261,6 +282,15 @@
           <button class="btn secondary tts" data-for="safetyText">קריינות</button>
         </div>
       </div>
+
+      <div class="card">
+        <h3>שומרי היער – חידון מהיר</h3>
+        <div id="quiz" class="quiz"></div>
+        <div class="game-row">
+          <button class="btn" id="quizCheck">בדיקה</button>
+          <span id="quizResult" class="legend" aria-live="polite"></span>
+        </div>
+      </div>
     </section>
 
     <!-- מרכז משחקים -->
@@ -270,11 +300,21 @@
         <ul>
           <li>סדר את הזמן (היסטוריה)</li>
           <li>בונים אגם (גיאולוגיה)</li>
-          <li>התאימו שם לצמח (צמחייה)</li>
+          <li>קומיקס: מסע טיפת מים</li>
+          <li>מי גר ביער? (חיפוש)</li>
           <li>מה החיה אוכלת? (בעלי חיים)</li>
           <li>מצאו את הדרך למפל (שבילים)</li>
           <li>ארזו לתרמיל (קמפינג)</li>
+          <li>שומרי היער – חידון</li>
         </ul>
+      </div>
+    </section>
+
+    <!-- אוצר מילים -->
+    <section id="glossary" class="section">
+      <div class="card">
+        <h2>אוצר מילים</h2>
+        <div id="glossaryWrap" class="glossary"></div>
       </div>
     </section>
 
