@@ -7,7 +7,7 @@ navButtons.forEach(btn => {
     btn.classList.add('active');
     const id = btn.dataset.section;
     sections.forEach(s => s.classList.toggle('active', s.id === id));
-    if(id==='map') setTimeout(initMap, 0);
+    if(id==='map') setTimeout(()=>{ initMap(); initMapToggle(); }, 0);
     if(id==='trails') setTimeout(initMaze, 0);
     if(id==='flora') setTimeout(initFloraGame, 0);
     if(id==='fauna') setTimeout(initDietGame, 0);
@@ -114,6 +114,29 @@ function initMap(){
   L.marker(beach).addTo(map).bindPopup('חוף רחצה (משוער)');
   L.marker(camp).addTo(map).bindPopup('אתר קמפינג (משוער)');
   mapInited = true;
+}
+
+// ---------- MAP TOGGLE (OSM / PDF) ----------
+function initMapToggle(){
+  const btnOSM = document.getElementById('btnMapOSM');
+  const btnPDF = document.getElementById('btnMapPDF');
+  const osmWrap = document.getElementById('mapWrap');
+  const pdfWrap = document.getElementById('pdfWrap');
+  if(!btnOSM || !btnPDF || !osmWrap || !pdfWrap) return;
+
+  function setMode(mode){
+    const osm = (mode === 'osm');
+    osmWrap.classList.toggle('active', osm);
+    pdfWrap.classList.toggle('active', !osm);
+    btnOSM.classList.toggle('secondary', !osm);
+    btnOSM.setAttribute('aria-pressed', String(osm));
+    btnPDF.classList.toggle('secondary', osm);
+    btnPDF.setAttribute('aria-pressed', String(!osm));
+  }
+  btnOSM.onclick = ()=> setMode('osm');
+  btnPDF.onclick = ()=> setMode('pdf');
+  // ברירת מחדל: OSM
+  setMode('osm');
 }
 
 // ---------- TAP-TO-DROP HELPERS ----------
